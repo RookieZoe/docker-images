@@ -28,6 +28,7 @@ RUN apk add --no-cache --virtual .build-deps \
 
 # Reuse same cli arguments as the nginx:alpine image used to build
 RUN CONFARGS=$(nginx -V 2>&1 | sed -n -e 's/^.*arguments: //p') && \
+  mkdir /usr/src && \
   tar -zxC /usr/src -f nginx.tar.gz && \
   tar -xzvf "nchan.tar.gz" && \
   tar -xzvf "headers-more-nginx-module.tar.gz" && \
