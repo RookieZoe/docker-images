@@ -27,8 +27,8 @@ RUN apk add --no-cache --virtual .build-deps \
   geoip-dev
 
 # Reuse same cli arguments as the nginx:alpine image used to build
-RUN CONFARGS=$(nginx -V 2>&1 | sed -n -e 's/^.*arguments: //p') \
-	tar -zxC /usr/src -f nginx.tar.gz && \
+RUN CONFARGS=$(nginx -V 2>&1 | sed -n -e 's/^.*arguments: //p') && \
+  tar -zxC /usr/src -f nginx.tar.gz && \
   tar -xzvf "nchan.tar.gz" && \
   tar -xzvf "headers-more-nginx-module.tar.gz" && \
   NCHAN_DIR="$(pwd)/nchan-${NCHAN_VERSION}" && \
