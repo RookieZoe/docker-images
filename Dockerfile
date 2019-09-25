@@ -1,8 +1,7 @@
 FROM nginx:alpine AS builder
 
 # nginx:alpine contains NGINX_VERSION environment variable, like so:
-# ENV NGINX_VERSION 1.15.0
-
+ENV NGINX_VERSION 1.17.4
 ENV NCHAN_VERSION 1.2.6
 ENV HEADERS_MORE_VERSION 0.33
 
