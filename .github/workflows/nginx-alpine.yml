@@ -1,0 +1,22 @@
+name: nginx-alpine
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Publish to DockerHub
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: rookiezoe/nginx
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          dockerfile: ./nginx/Dockerfile
+      - name: Publish to docker.pkg.github.com
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: docker.pkg.github.com/rookiezoe/container/nginx
+          username: ${{ secrets.GITHUB_DOCKER_USERNAME }}
+          password: ${{ secrets.GITHUB_DOCKER_PASSWORD }}
+          dockerfile: ./nginx/Dockerfile
+          registry: docker.pkg.github.com
