@@ -1,5 +1,6 @@
 name: rsshub-alpine
 on:
+  push
   schedule:
     - cron: '0 2 28 * *'
 jobs:
@@ -14,11 +15,11 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           dockerfile: ./rsshub/Dockerfile
-      - name: Publish to docker.pkg.github.com
-        uses: elgohr/Publish-Docker-Github-Action@master
-        with:
-          name: docker.pkg.github.com/rookiezoe/containers/rsshub
-          username: ${{ secrets.GITHUB_DOCKER_USERNAME }}
-          password: ${{ secrets.GITHUB_DOCKER_PASSWORD }}
-          dockerfile: ./rsshub/Dockerfile
-          registry: docker.pkg.github.com
+      # - name: Publish to docker.pkg.github.com
+      #   uses: elgohr/Publish-Docker-Github-Action@master
+      #   with:
+      #     name: docker.pkg.github.com/rookiezoe/containers/rsshub
+      #     username: ${{ secrets.GITHUB_DOCKER_USERNAME }}
+      #     password: ${{ secrets.GITHUB_DOCKER_PASSWORD }}
+      #     dockerfile: ./rsshub/Dockerfile
+      #     registry: docker.pkg.github.com
