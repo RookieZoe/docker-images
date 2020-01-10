@@ -39,7 +39,7 @@ RUN CONFARGS=$(nginx -V 2>&1 | sed -n -e 's/^.*arguments: //p') && \
   mv ./objs/*.so /
 
 FROM nginx:alpine
-# Extract the dynamic module NCHAN from the builder image
+LABEL maintainer="Rookie_Zoe <i@rookiezoe.com>"
 COPY --from=builder /ngx_nchan_module.so /usr/local/nginx/modules/ngx_nchan_module.so
 COPY --from=builder /ngx_http_headers_more_filter_module.so /usr/local/nginx/modules/ngx_http_headers_more_filter_module.so
 

@@ -1,4 +1,4 @@
-FROM node:10.17-alpine AS builder
+FROM node:12-alpine AS builder
 
 ENV NODE_ENV production
 ENV TZ Asia/Shanghai
@@ -15,9 +15,10 @@ RUN cd / && \
   git clone --branch=master https://github.com/DIYgod/RSSHub.git && \
   cd /RSSHub && \
   export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true && \
-  npm install --production
+  yarn --production
 
-FROM node:10.17-alpine
+FROM node:12-alpine
+LABEL maintainer="Rookie_Zoe <i@rookiezoe.com>"
 WORKDIR /app
 COPY --from=builder /usr/bin/dumb-init /usr/bin/dumb-init
 COPY --from=builder /RSSHub/lib /app/lib
@@ -25,4 +26,4 @@ COPY --from=builder /RSSHub/node_modules /app/node_modules
 COPY --from=builder /RSSHub/package.json /app/package.json
 EXPOSE 1200
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["npm", "run", "start"]
+CMD ["yarn", "start"]

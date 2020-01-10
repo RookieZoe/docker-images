@@ -16,6 +16,7 @@ RUN cd / && \
   strip -s trojan
 
 FROM alpine:latest
+LABEL maintainer="Rookie_Zoe <i@rookiezoe.com>"
 COPY --from=builder /trojan/trojan /usr/local/bin/trojan
 RUN apk add --no-cache --virtual .trojan-rundeps \
   libstdc++ \

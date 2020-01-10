@@ -1,6 +1,5 @@
 name: trojan-alpine
 on:
-  push:
   schedule:
     - cron: '0 2 28 * *'
 jobs:
