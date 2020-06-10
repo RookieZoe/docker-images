@@ -1,6 +1,8 @@
 FROM nginx:alpine AS builder
 
 # nginx:alpine contains NGINX_VERSION environment variable, like so:
+ENV NCHAN_LATEST_TAR=$NCHAN_LATEST_TAR
+ENV HEADERS_MORE_LATEST_TAR=$HEADERS_MORE_LATEST_TAR
 
 # Download sources
 RUN wget "http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz" -O nginx.tar.gz && \
