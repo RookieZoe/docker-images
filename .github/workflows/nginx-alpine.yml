@@ -35,7 +35,8 @@ jobs:
           HEADERS_MORE_LATEST_TAR: ${{ env.HEADERS_MORE_LATEST_TAR }}
         with:
           name: rookiezoe/nginx
+          tags: 'latest,${{ env.NGINX_VERSION }}'
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+          buildargs: NCHAN_LATEST_TAR,HEADERS_MORE_LATEST_TAR
           dockerfile: ./nginx/Dockerfile
-          tags: 'latest,${{ env.NGINX_VERSION }}'
