@@ -2,15 +2,36 @@ name: nginx-alpine
 on:
   schedule:
     - cron: '0 2 28 * *'
+  push:
+    branches:
+      - master
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
+
+      - name: Set env
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo -E apt-get -qq update
+          sudo -E apt-get -qq install jq
+          sudo -E apt-get -y autoremove --purge
+          sudo -E apt-get clean
+          echo "::set-env name=NGINX_VERSION::$(echo -n $(curl -s https://api.github.com/repos/nginx/nginx/tags | jq -r 'sort_by(.name) | last | .name | split("release-") | .[1]'))"
+          echo "::set-env name=NCHAN_LATEST_TAR::$(echo -n $(curl -s https://api.github.com/repos/slact/nchan/tags | jq -r 'sort_by(.name) | last | .tarball_url'))"
+          echo "::set-env name=HEADERS_MORE_LATEST_TAR::$(echo -n $(curl -s https://api.github.com/repos/openresty/headers-more-nginx-module/tags | jq -r 'sort_by(.name) | last | .tarball_url'))"
+
       - name: Publish to DockerHub
         uses: elgohr/Publish-Docker-Github-Action@master
+        if: success()
+        env:
+          NCHAN_LATEST_TAR: ${{ env.NCHAN_LATEST_TAR }}
+          HEADERS_MORE_LATEST_TAR: ${{ env.HEADERS_MORE_LATEST_TAR }}
         with:
           name: rookiezoe/nginx
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           dockerfile: ./nginx/Dockerfile
+          tags: 'latest,${{ env.NGINX_VERSION }}'
