@@ -25,7 +25,9 @@ jobs:
           echo ::set-env name=NGINX_VERSION::$(echo -n $(curl -s https://api.github.com/repos/nginx/nginx/tags | jq -r 'sort_by(.name) | last | .name | split("release-") | .[1]'))
           echo ::set-env name=NCHAN_LATEST_TAR::$(echo -n $(curl -s https://api.github.com/repos/slact/nchan/tags | jq -r 'sort_by(.name) | last | .tarball_url'))
           echo ::set-env name=HEADERS_MORE_LATEST_TAR::$(echo -n $(curl -s https://api.github.com/repos/openresty/headers-more-nginx-module/tags | jq -r 'sort_by(.name) | last | .tarball_url'))
-          [[ $NGINX_VERSION != $latest_tag ]]; exit $?
+          echo "NGINX_VERSION=$NGINX_VERSION"
+          echo "latest_tag=$latest_tag"
+          [[ $NGINX_VERSION != $latest_tag ]] && exit 0
 
       - name: Version not change
         if: failure()
