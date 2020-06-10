@@ -1,13 +1,15 @@
 FROM nginx:alpine AS builder
 
 # nginx:alpine contains NGINX_VERSION environment variable, like so:
-ENV NCHAN_LATEST_TAR=$NCHAN_LATEST_TAR
-ENV HEADERS_MORE_LATEST_TAR=$HEADERS_MORE_LATEST_TAR
+ARG NCHAN_LATEST_TAR
+ARG HEADERS_MORE_LATEST_TAR
+ENV nchan_latest_tar=$NCHAN_LATEST_TAR
+ENV headers_more_latest_tar=$HEADERS_MORE_LATEST_TAR
 
 # Download sources
 RUN wget "http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz" -O nginx.tar.gz && \
-  wget "${NCHAN_LATEST_TAR}" -O nchan.tar.gz && \
-  wget "${HEADERS_MORE_LATEST_TAR}" -O headers-more-nginx-module.tar.gz
+  wget "${nchan_latest_tar}" -O nchan.tar.gz && \
+  wget "${headers_more_latest_tar}" -O headers-more-nginx-module.tar.gz
 
 # For latest build deps, see https://github.com/nginxinc/docker-nginx/blob/master/mainline/alpine/Dockerfile
 RUN apk add --no-cache --virtual .build-deps \
