@@ -18,8 +18,8 @@ jobs:
           sudo -E apt-get -qq update
           sudo -E apt-get -qq install jq
           export NGINX_VERSION=$(echo -n $(curl -s https://api.github.com/repos/nginx/nginx/tags | jq -r 'sort_by(.name) | last | .name | split("release-") | .[1]'))
-          export NCHAN_LATEST_TAR=$(echo -n $(curl -s https://api.github.com/repos/slact/nchan/tags | jq -r 'sort_by(.name) | last | .tarball_url'))"
-          export HEADERS_MORE_LATEST_TAR=$(echo -n $(curl -s https://api.github.com/repos/openresty/headers-more-nginx-module/tags | jq -r 'sort_by(.name) | last | .tarball_url'))"
+          export NCHAN_LATEST_TAR=$(echo -n $(curl -s https://api.github.com/repos/slact/nchan/tags | jq -r 'sort_by(.name) | last | .tarball_url'))
+          export HEADERS_MORE_LATEST_TAR=$(echo -n $(curl -s https://api.github.com/repos/openresty/headers-more-nginx-module/tags | jq -r 'sort_by(.name) | last | .tarball_url'))
           echo "::set-env name=NGINX_VERSION::$NGINX_VERSION"
           echo "::set-env name=NCHAN_LATEST_TAR::$NCHAN_LATEST_TAR"
           echo "::set-env name=HEADERS_MORE_LATEST_TAR::$HEADERS_MORE_LATEST_TAR"
