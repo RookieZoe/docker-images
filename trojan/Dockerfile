@@ -1,5 +1,8 @@
 FROM alpine:latest AS builder
 
+ARG TROJAN_LATEST_TAR
+ENV trojan_latest_tar=$TROJAN_LATEST_TAR
+
 RUN apk add --no-cache --virtual .build-deps \
   git \
   cmake \
@@ -8,9 +11,10 @@ RUN apk add --no-cache --virtual .build-deps \
   openssl-dev \
   mariadb-connector-c-dev
 
-RUN cd / && \
-  git clone --branch=master https://github.com/trojan-gfw/trojan.git && \
-  cd trojan/ && \
+RUN wget "${trojan_latest_tar}" -O /trojan.tar.gz && \
+  mkdir /trojan && \
+  tar -xzC /trojan -f trojan.tar.gz --strip-components 1 && \
+  cd /trojan/ && \
   cmake . && \
   make -j $(nproc) && \
   strip -s trojan
