@@ -2,6 +2,8 @@ name: trojan-alpine
 on:
   schedule:
     - cron: '0 0 * * *'
+  push:
+    branches: master
 
 env:
   DOCKER_REPO_NAME: rookiezoe/trojan
@@ -21,8 +23,8 @@ jobs:
           export latest_tag=$(echo -n $(curl -s "https://registry.hub.docker.com/v1/repositories/${DOCKER_REPO_NAME}/tags" | jq -r 'sort_by(.name) | reverse | .[1].name'))
           git clone https://github.com/trojan-gfw/trojan.git $GITHUB_WORKSPACE/tmp/trojan
           cd $GITHUB_WORKSPACE/tmp/trojan
-          export TROJAN_VERSION=$(echo -n $(git describe --tags $(git rev-list --tags --max-count=1)))
-          export TROJAN_LATEST_TAR=$(echo -n "https://github.com/trojan-gfw/trojan/archive/$TROJAN_VERSION.tar.gz")
+          export TROJAN_VERSION=$(echo -n $(git describe --tags $(git rev-list --tags --max-count=1) | cut -d "v" -f2))
+          export TROJAN_LATEST_TAR=$(echo -n "https://github.com/trojan-gfw/trojan/archive/v$TROJAN_VERSION.tar.gz")
           cd $GITHUB_WORKSPACE
           echo ::set-env name=TROJAN_VERSION::$TROJAN_VERSION
           echo ::set-env name=TROJAN_LATEST_TAR::$TROJAN_LATEST_TAR
