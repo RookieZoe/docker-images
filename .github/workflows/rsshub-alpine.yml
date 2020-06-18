@@ -2,6 +2,9 @@ name: rsshub-alpine
 on:
   schedule:
     - cron: '0 0 * * *'
+  push:
+    branches:
+      - master
 
 env:
   DOCKER_REPO_NAME: rookiezoe/rsshub
@@ -24,12 +27,12 @@ jobs:
           echo ::set-env name=LAST_COMMIT::$LAST_COMMIT
           [[ $LAST_COMMIT == $latest_tag ]]; exit $?
 
-      - name: Version not change
+      - name: No new commit
         if: success()
         run: |
           echo "LAST_COMMIT=$LAST_COMMIT"
           echo "No new commit, abort."
-          exit 0;
+          exit 0
 
       - name: Publish to DockerHub
         uses: elgohr/Publish-Docker-Github-Action@master
@@ -40,3 +43,9 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           dockerfile: ./rsshub/Dockerfile
+
+      - name: Finished
+        if: failure()
+        run: |
+          echo "Finished"
+          exit 0

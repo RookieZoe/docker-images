@@ -2,7 +2,9 @@ name: nginx-alpine
 on:
   schedule:
     - cron: '0 0 * * *'
-
+  push:
+    branches:
+      - master
 env:
   DOCKER_REPO_NAME: rookiezoe/nginx
 
@@ -43,7 +45,7 @@ jobs:
           echo "NCHAN_LATEST_TAR=$NCHAN_LATEST_TAR"
           echo "HEADERS_MORE_LATEST_TAR=$HEADERS_MORE_LATEST_TAR"
           echo "Nginx Version is not change, abort."
-          exit 0;
+          exit 0
 
       - name: Publish to DockerHub
         uses: elgohr/Publish-Docker-Github-Action@master
@@ -55,3 +57,9 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           buildargs: NCHAN_LATEST_TAR,HEADERS_MORE_LATEST_TAR
           dockerfile: ./nginx/Dockerfile
+
+      - name: Finished
+        if: failure()
+        run: |
+          echo "Finished"
+          exit 0
