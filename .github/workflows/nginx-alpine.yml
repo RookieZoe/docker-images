@@ -2,9 +2,6 @@ name: nginx-alpine
 on:
   schedule:
     - cron: '0 0 * * *'
-  push:
-    branches:
-      - master
 
 env:
   DOCKER_REPO_NAME: rookiezoe/nginx
