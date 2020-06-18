@@ -46,7 +46,7 @@ jobs:
   publish:
     if: needs.get_env.outputs.IS_VERSION_CHANGED != 0
     runs-on: ubuntu-latest
-    needs: [get_env, echo_env]
+    needs: get_env
     steps:
       - uses: actions/checkout@master
       - name: Publish to DockerHub
