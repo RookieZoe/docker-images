@@ -43,19 +43,8 @@ jobs:
           echo ::set-output name=HEADERS_MORE_LATEST_TAR::$HEADERS_MORE_LATEST_TAR
           [[ $NGINX_VERSION == $latest_tag ]]; echo ::set-output name=IS_VERSION_CHANGED::$?
 
-  echo_env:
-    runs-on: ubuntu-latest
-    needs: get_env
-    steps:
-      - name: Echo env
-        run: |
-          echo NGINX_VERSION=${{ needs.get_env.outputs.NGINX_VERSION }}
-          echo NCHAN_LATEST_TAR=${{ needs.get_env.outputs.NCHAN_LATEST_TAR }}
-          echo HEADERS_MORE_LATEST_TAR=${{ needs.get_env.outputs.HEADERS_MORE_LATEST_TAR }}
-          echo IS_VERSION_CHANGED=${{ needs.get_env.outputs.IS_VERSION_CHANGED }}
-
   publish:
-    if: ${{ needs.get_env.outputs.IS_VERSION_CHANGED }}
+    if: needs.get_env.outputs.IS_VERSION_CHANGED != 0
     runs-on: ubuntu-latest
     needs: [get_env, echo_env]
     steps:
