@@ -52,9 +52,9 @@ jobs:
       - name: Publish to DockerHub
         uses: docker/build-push-action@v1
         with:
-          name: ${{ env.DOCKER_REPO_NAME }}
           tags: latest,${{ needs.get_env.outputs.NGINX_VERSION }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: ${{ env.DOCKER_REPO_NAME }}
           build_args: NCHAN_LATEST_TAR=${{ needs.get_env.outputs.NCHAN_LATEST_TAR }},HEADERS_MORE_LATEST_TAR=${{ needs.get_env.outputs.HEADERS_MORE_LATEST_TAR }}
           dockerfile: ./nginx/Dockerfile

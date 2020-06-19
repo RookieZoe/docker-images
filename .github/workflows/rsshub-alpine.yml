@@ -42,4 +42,5 @@ jobs:
           tags: latest,${{ needs.get_env.outputs.LAST_COMMIT }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: ${{ env.DOCKER_REPO_NAME }}
           dockerfile: ./rsshub/Dockerfile
