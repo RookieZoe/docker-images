@@ -2,9 +2,6 @@ name: rsshub-alpine
 on:
   schedule:
     - cron: '0 0 * * *'
-  push:
-    branches:
-      - master
 
 env:
   DOCKER_REPO_NAME: rookiezoe/rsshub
@@ -38,7 +35,6 @@ jobs:
       - name: Publish to DockerHub
         uses: docker/build-push-action@v1
         with:
-          name: ${{ env.DOCKER_REPO_NAME }}
           tags: latest,${{ needs.get_env.outputs.LAST_COMMIT }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
