@@ -12,6 +12,7 @@ jobs:
     outputs:
       LATEST_TAG: ${{ steps.set_outputs.outputs.LATEST_TAG }}
       LAST_COMMIT: ${{ steps.set_outputs.outputs.LAST_COMMIT }}
+      LAST_COMMIT_DATETIME: ${{ steps.set_outputs.outputs.LAST_COMMIT_DATETIME }}
     steps:
       - id: set_outputs
         env:
@@ -25,6 +26,7 @@ jobs:
           export LAST_COMMIT="commit-$LAST_COMMIT_DATETIME"
           echo ::set-output name=LATEST_TAG::$LATEST_TAG
           echo ::set-output name=LAST_COMMIT::$LAST_COMMIT
+          echo ::set-output name=LAST_COMMIT_DATETIME::$LAST_COMMIT_DATETIME
 
   publish:
     if: needs.get_env.outputs.LATEST_TAG != needs.get_env.outputs.LAST_COMMIT
@@ -36,6 +38,7 @@ jobs:
         uses: docker/build-push-action@v1
         with:
           tags: latest,${{ needs.get_env.outputs.LAST_COMMIT }}
+          labels: LAST_COMMIT_DATETIME=${{ needs.get_env.outputs.LAST_COMMIT_DATETIME }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: ${{ env.DOCKER_REPO_NAME }}
