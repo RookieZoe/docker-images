@@ -2,6 +2,9 @@ name: nginx-alpine
 on:
   schedule:
     - cron: '0 0 * * *'
+  push:
+    branches:
+      - master
 
 env:
   DOCKER_REPO_NAME: rookiezoe/nginx
@@ -10,10 +13,10 @@ jobs:
   get_env:
     runs-on: ubuntu-latest
     outputs:
+      LATEST_TAG: ${{ steps.set_outputs.outputs.LATEST_TAG }}
       NGINX_VERSION: ${{ steps.set_outputs.outputs.NGINX_VERSION }}
       NCHAN_LATEST_TAR: ${{ steps.set_outputs.outputs.NCHAN_LATEST_TAR }}
       HEADERS_MORE_LATEST_TAR: ${{ steps.set_outputs.outputs.HEADERS_MORE_LATEST_TAR }}
-      IS_VERSION_CHANGED: ${{ steps.set_outputs.outputs.IS_VERSION_CHANGED }}
     steps:
       - id: set_outputs
         env:
@@ -22,7 +25,7 @@ jobs:
         run: |
           sudo -E apt-get -qq update
           sudo -E apt-get -qq install jq git
-          export latest_tag=$(echo -n $(curl -s "https://registry.hub.docker.com/v1/repositories/${DOCKER_REPO_NAME}/tags" | jq -r 'sort_by(.name) | reverse | .[1].name'))
+          export $LATEST_TAG=$(echo -n $(curl -s "https://registry.hub.docker.com/v1/repositories/${DOCKER_REPO_NAME}/tags" | jq -r 'sort_by(.name) | reverse | .[1].name'))
           git clone https://github.com/nginx/nginx.git $GITHUB_WORKSPACE/tmp/nginx
           cd $GITHUB_WORKSPACE/tmp/nginx
           export NGINX_VERSION=$(echo -n $(git describe --tags $(git rev-list --tags --max-count=1) | cut -d "-" -f2))
@@ -35,13 +38,13 @@ jobs:
           cd $GITHUB_WORKSPACE/tmp/headers-more-nginx-module
           export HEADERS_MORE_LATEST_TAR="https://github.com/openresty/headers-more-nginx-module/archive/$(echo -n $(git describe --tags $(git rev-list --tags --max-count=1))).tar.gz"
           cd $GITHUB_WORKSPACE
+          echo ::set-output name=LATEST_TAG::$LATEST_TAG
           echo ::set-output name=NGINX_VERSION::$NGINX_VERSION
           echo ::set-output name=NCHAN_LATEST_TAR::$NCHAN_LATEST_TAR
           echo ::set-output name=HEADERS_MORE_LATEST_TAR::$HEADERS_MORE_LATEST_TAR
-          [[ $NGINX_VERSION == $latest_tag ]]; echo ::set-output name=IS_VERSION_CHANGED::$?
 
   publish:
-    if: needs.get_env.outputs.IS_VERSION_CHANGED != 0
+    if: needs.get_env.outputs.LATEST_TAG != needs.get_env.outputs.NGINX_VERSION
     runs-on: ubuntu-latest
     needs: get_env
     steps:
