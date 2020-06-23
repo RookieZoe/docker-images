@@ -38,7 +38,7 @@ jobs:
         uses: docker/build-push-action@v1
         with:
           tags: latest,${{ needs.get_env.outputs.LAST_COMMIT }}
-          labels: LAST_COMMIT_DATETIME=${{ needs.get_env.outputs.LAST_COMMIT_DATETIME }}
+#           labels: LAST_COMMIT_DATETIME=${{ needs.get_env.outputs.LAST_COMMIT_DATETIME }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: ${{ env.DOCKER_REPO_NAME }}
