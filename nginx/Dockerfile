@@ -45,10 +45,8 @@ LABEL maintainer="Rookie_Zoe <i@rookiezoe.com>"
 ARG nginx_version
 ENV NGINX_VERSION=$nginx_version
 COPY --from=builder /etc/nginx /etc/nginx
-COPY --from=builder /var/log/nginx /var/log/nginx
 COPY --from=builder /usr/lib/nginx /usr/lib/nginx
 COPY --from=builder /usr/sbin/nginx /usr/sbin/nginx
-COPY --from=builder /var/cache/nginx /var/cache/nginx
 
 EXPOSE 80
 STOPSIGNAL SIGTERM
