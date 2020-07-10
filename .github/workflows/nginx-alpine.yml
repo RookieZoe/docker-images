@@ -53,5 +53,5 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: ${{ env.DOCKER_REPO_NAME }}
-          build_args: NCHAN_LATEST_TAR=${{ needs.get_env.outputs.NCHAN_LATEST_TAR }},HEADERS_MORE_LATEST_TAR=${{ needs.get_env.outputs.HEADERS_MORE_LATEST_TAR }}
+          build_args: nginx_version=${{ needs.get_env.outputs.NGINX_VERSION }},nchan_latest_tar=${{ needs.get_env.outputs.NCHAN_LATEST_TAR }},headers_more_latest_tar=${{ needs.get_env.outputs.HEADERS_MORE_LATEST_TAR }}
           dockerfile: ./nginx/Dockerfile

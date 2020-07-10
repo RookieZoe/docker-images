@@ -1,10 +1,9 @@
 FROM nginx:alpine AS builder
 
-# nginx:alpine contains NGINX_VERSION environment variable, like so:
-ARG NCHAN_LATEST_TAR
-ARG HEADERS_MORE_LATEST_TAR
-ENV nchan_latest_tar=$NCHAN_LATEST_TAR
-ENV headers_more_latest_tar=$HEADERS_MORE_LATEST_TAR
+ARG nginx_version
+ARG nchan_latest_tar
+ARG headers_more_latest_tar
+ENV NGINX_VERSION=$nginx_version
 
 # Download sources
 RUN wget "http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz" -O nginx.tar.gz && \
@@ -39,13 +38,17 @@ RUN CONFARGS=$(nginx -V 2>&1 | sed -n -e 's/^.*arguments: //p') && \
   HEADERS_MORE_DIR="$(pwd)/headers-more-nginx-module" && \
   cd /usr/src/nginx-$NGINX_VERSION && \
   ./configure --with-compat $CONFARGS --add-dynamic-module=$NCHAN_DIR --add-dynamic-module=$HEADERS_MORE_DIR && \
-  make modules && \
-  mv ./objs/*.so /
+  make && make install
 
 FROM nginx:alpine
 LABEL maintainer="Rookie_Zoe <i@rookiezoe.com>"
-COPY --from=builder /ngx_nchan_module.so /usr/local/nginx/modules/ngx_nchan_module.so
-COPY --from=builder /ngx_http_headers_more_filter_module.so /usr/local/nginx/modules/ngx_http_headers_more_filter_module.so
+ARG nginx_version
+ENV NGINX_VERSION=$nginx_version
+COPY --from=builder /etc/nginx /etc/nginx
+COPY --from=builder /var/log/nginx /var/log/nginx
+COPY --from=builder /usr/lib/nginx /usr/lib/nginx
+COPY --from=builder /usr/sbin/nginx /usr/sbin/nginx
+COPY --from=builder /var/cache/nginx /var/cache/nginx
 
 EXPOSE 80
 STOPSIGNAL SIGTERM
