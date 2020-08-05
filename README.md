@@ -2,7 +2,7 @@
 
 Some self-build images for self-host.
 
-## nginx
+## 1. nginx
 
 [![nginx](http://dockeri.co/image/rookiezoe/nginx)](https://hub.docker.com/r/rookiezoe/nginx)
 
@@ -10,19 +10,25 @@ Some self-build images for self-host.
 
 [nginx](http://nginx.org/download) docker image with [headers-more-nginx-module](https://github.com/openresty/headers-more-nginx-module/releases) and [nchan](https://github.com/slact/nchan/releases) module.
 
-To use:
+### Usage: 
+
+1. In the beginning of `nginx.conf`, add module.
 
 ```nginx.conf
 load_module modules/ngx_nchan_module.so;
 load_module modules/ngx_http_headers_more_filter_module.so;
 ```
 
-## rsshub
+2. Then, the other config is as same as official [docker-image](https://hub.docker.com/_/nginx)'s config.
+
+## 2. rsshub
 
 [![rsshub](http://dockeri.co/image/rookiezoe/rsshub)](https://hub.docker.com/r/rookiezoe/rsshub)
 
 [![status](https://github.com/RookieZoe/container/workflows/rsshub-alpine/badge.svg)](https://github.com/RookieZoe/docker-images/actions?query=workflow%3Arsshub-alpine)
 
 [rsshub](https://github.com/DIYgod/RSSHub) docker image.
+
+### Usage: 
 
 Deploy configuration: as same as offical config: [Configuration](https://docs.rsshub.app/en/install/#configuration-3)
