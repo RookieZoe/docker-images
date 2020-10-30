@@ -31,3 +31,5 @@ tmp
 ./core
 *.sublime-project
 *.sublime-workspace
+
+curl.bash

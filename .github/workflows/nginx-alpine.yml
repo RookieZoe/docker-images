@@ -2,6 +2,8 @@ name: nginx-alpine
 on:
   schedule:
     - cron: '0 0 * * *'
+  repository_dispatch:
+    types: 'build-nginx'
 
 env:
   DOCKER_REPO_NAME: rookiezoe/nginx

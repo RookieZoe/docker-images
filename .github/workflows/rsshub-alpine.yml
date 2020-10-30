@@ -2,6 +2,8 @@ name: rsshub-alpine
 on:
   schedule:
     - cron: '0 0 5/15 * *'
+  repository_dispatch:
+    types: 'build-rsshub'
 
 env:
   DOCKER_REPO_NAME: rookiezoe/rsshub
