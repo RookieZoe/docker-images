@@ -43,5 +43,5 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: latest,${{ needs.get_env.outputs.LATEST_COMMIT }}
+          tags: ${{ env.DOCKER_REPO_NAME }}:latest,${{ env.DOCKER_REPO_NAME }}:${{ needs.get_env.outputs.LATEST_COMMIT }}
           context: ./rsshub

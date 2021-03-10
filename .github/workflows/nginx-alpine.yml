@@ -58,6 +58,9 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: latest,${{ needs.get_env.outputs.NGINX_VERSION }}
+          tags: ${{ env.DOCKER_REPO_NAME }}:latest,${{ env.DOCKER_REPO_NAME }}:${{ needs.get_env.outputs.NGINX_VERSION }}
           context: ./nginx
-          build-args: nginx_version=${{ needs.get_env.outputs.NGINX_VERSION }},nchan_latest_tar=${{ needs.get_env.outputs.NCHAN_LATEST_TAR }},headers_more_latest_tar=${{ needs.get_env.outputs.HEADERS_MORE_LATEST_TAR }}
+          build-args: |
+            nginx_version=${{ needs.get_env.outputs.NGINX_VERSION }}
+            nchan_latest_tar=${{ needs.get_env.outputs.NCHAN_LATEST_TAR }}
+            headers_more_latest_tar=${{ needs.get_env.outputs.HEADERS_MORE_LATEST_TAR }}
