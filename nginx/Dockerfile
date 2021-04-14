@@ -5,8 +5,6 @@ ARG nchan_latest_tar
 ARG headers_more_latest_tar
 ENV NGINX_VERSION=$nginx_version
 
-COPY ./nchan/0001-GCC-10-compatibility.patch 0001-GCC-10-compatibility.patch
-
 # Download sources
 RUN wget "http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz" -O nginx.tar.gz && \
   wget "${nchan_latest_tar}" -O nchan.tar.gz && \
@@ -14,7 +12,6 @@ RUN wget "http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz" -O nginx.tar.
 
 # For latest build deps, see https://github.com/nginxinc/docker-nginx/blob/master/mainline/alpine/Dockerfile
 RUN apk add --no-cache --virtual .build-deps \
-  git \
   gcc \
   libc-dev \
   make \
@@ -39,8 +36,6 @@ RUN CONFARGS=$(nginx -V 2>&1 | sed -n -e 's/^.*arguments: //p') && \
   tar -xzC ./headers-more-nginx-module -f headers-more-nginx-module.tar.gz --strip-components 1 && \
   NCHAN_DIR="$(pwd)/nchan" && \
   HEADERS_MORE_DIR="$(pwd)/headers-more-nginx-module" && \
-  cp 0001-GCC-10-compatibility.patch $NCHAN_DIR/ && \
-  cd $NCHAN_DIR && git apply 0001-GCC-10-compatibility.patch && \
   cd /usr/src/nginx-$NGINX_VERSION && \
   ./configure --with-compat $CONFARGS --add-dynamic-module=$NCHAN_DIR --add-dynamic-module=$HEADERS_MORE_DIR && \
   make && make install
