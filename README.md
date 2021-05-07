@@ -10,7 +10,7 @@ Some self-build images for self-host.
 
 [nginx](http://nginx.org/download) docker image with [headers-more-nginx-module](https://github.com/openresty/headers-more-nginx-module/releases) and [nchan](https://github.com/slact/nchan/releases) module.
 
-### Usage: 
+### Usage
 
 1. In the beginning of `nginx.conf`, add module.
 
@@ -29,6 +29,14 @@ load_module modules/ngx_http_headers_more_filter_module.so;
 
 [rsshub](https://github.com/DIYgod/RSSHub) docker image.
 
-### Usage: 
+### Usage
 
 Deploy configuration: as same as offical config: [Configuration](https://docs.rsshub.app/en/install/#configuration-3)
+
+## 3. xray
+
+[![xray](http://dockeri.co/image/rookiezoe/xray)](https://hub.docker.com/r/rookiezoe/xray)
+
+[![status](https://github.com/RookieZoe/docker-images/workflows/xray-alpine/badge.svg)](https://github.com/RookieZoe/docker-images/actions?query=workflow%3Axray-alpine)
+
+[xray](https://github.com/XTLS/Xray-core) docker image.

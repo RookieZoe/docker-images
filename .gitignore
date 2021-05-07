@@ -8,7 +8,7 @@
 openwrt
 
 # local env files
-*env*
+*env.*
 
 # Log files
 *.log*
