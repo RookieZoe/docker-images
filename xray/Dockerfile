@@ -1,19 +1,13 @@
-# Dockerfile for xray based alpine with nginx
-# Copyright (C) 2019 - 2020 Teddysun <i@teddysun.com>
-# Reference URL:
-# https://github.com/XTLS/Xray-core
-# https://github.com/Loyalsoldier/v2ray-rules-dat/
-
 FROM alpine:latest AS builder
 
 ARG XRAY_VERSION
 
-COPY download.sh /download.sh
+COPY download-xray.sh /download-xray.sh
 RUN set -ex \
   && apk add --no-cache unzip \
   && mkdir -p /var/log/xray /usr/local/share/xray \
-  && chmod +x /download.sh \
-  && /download.sh $XRAY_VERSION \
+  && chmod +x /download-xray.sh \
+  && /download-xray.sh $XRAY_VERSION \
   && wget -O /geoip.dat https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat > /dev/null 2>&1 \
   && wget -O /geosite.dat https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat > /dev/null 2>&1
 

@@ -39,4 +39,4 @@ Deploy configuration: as same as offical config: [Configuration](https://docs.rs
 
 [![status](https://github.com/RookieZoe/docker-images/workflows/xray-alpine/badge.svg)](https://github.com/RookieZoe/docker-images/actions?query=workflow%3Axray-alpine)
 
-[xray](https://github.com/XTLS/Xray-core) docker image.
+[xray](https://github.com/XTLS/Xray-core) docker image, base on [teddysun](https://github.com/teddysun)'s Dockerfile.

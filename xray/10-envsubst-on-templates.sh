@@ -5,9 +5,9 @@ set -e
 ME=$(basename $0)
 
 auto_envsubst() {
-  local template_dir="${XRAY_ENVSUBST_TEMPLATE_DIR:-/etc/xray/templates}"
-  local suffix="${XRAY_ENVSUBST_TEMPLATE_SUFFIX:-.template}"
-  local output_dir="${XRAY_ENVSUBST_OUTPUT_DIR:-/etc/xray/conf.d}"
+  local template_dir="${XRAY_ENVSUBST_TEMPLATE_DIR:-/etc/xray/tpls}"
+  local suffix="${XRAY_ENVSUBST_TEMPLATE_SUFFIX:-.tpl}"
+  local output_dir="${XRAY_ENVSUBST_OUTPUT_DIR:-/etc/xray}"
 
   local template defined_envs relative_path output_path subdir
   defined_envs=$(printf '${%s} ' $(env | cut -d= -f1))

@@ -33,3 +33,4 @@ tmp
 *.sublime-workspace
 
 curl.bash
+xray-xtls
