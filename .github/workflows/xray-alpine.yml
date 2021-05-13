@@ -45,4 +45,4 @@ jobs:
           tags: ${{ env.DOCKER_REPO_NAME }}:latest,${{ env.DOCKER_REPO_NAME }}:${{ needs.get_env.outputs.XRAY_VERSION }}
           context: ./xray
           build-args: |
-            XRAY_VERSION=${{ needs.get_env.outputs.XRAY_VERSION }}
+            xray_version=${{ needs.get_env.outputs.XRAY_VERSION }}

@@ -1,18 +1,20 @@
 FROM alpine:latest AS builder
 
-ARG XRAY_VERSION
-
+ARG xray_version
+ENV XRAY_VERSION=$xray_version
 COPY download-xray.sh /download-xray.sh
 RUN set -ex \
   && apk add --no-cache unzip \
   && mkdir -p /var/log/xray /usr/local/share/xray \
   && chmod +x /download-xray.sh \
-  && /download-xray.sh $XRAY_VERSION \
+  && /download-xray.sh $xray_version \
   && wget -O /geoip.dat https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat > /dev/null 2>&1 \
   && wget -O /geosite.dat https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat > /dev/null 2>&1
 
 FROM alpine:latest
 LABEL maintainer="Rookie_Zoe <i@rookiezoe.com>"
+ARG xray_version
+ENV XRAY_VERSION=$xray_version
 WORKDIR /root
 
 COPY config.json /etc/xray/config.json
