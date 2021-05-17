@@ -1,4 +1,4 @@
-FROM nginx:alpine AS builder
+FROM nginx:stable-alpine AS builder
 
 ARG nginx_version
 ARG nchan_latest_tar
@@ -25,7 +25,7 @@ RUN apk add --no-cache --virtual .build-deps \
   gd-dev \
   geoip-dev
 
-# Reuse same cli arguments as the nginx:alpine image used to build
+# Reuse same cli arguments as the nginx:stable-alpine image used to build
 RUN CONFARGS=$(nginx -V 2>&1 | sed -n -e 's/^.*arguments: //p') && \
   CONFARGS=${CONFARGS/-Os -fomit-frame-pointer -g/-Os} && \
   mkdir /usr/src && \
@@ -40,7 +40,7 @@ RUN CONFARGS=$(nginx -V 2>&1 | sed -n -e 's/^.*arguments: //p') && \
   ./configure --with-compat $CONFARGS --add-dynamic-module=$NCHAN_DIR --add-dynamic-module=$HEADERS_MORE_DIR && \
   make && make install
 
-FROM nginx:alpine
+FROM nginx:stable-alpine
 LABEL maintainer="Rookie_Zoe <i@rookiezoe.com>"
 ARG nginx_version
 ENV NGINX_VERSION=$nginx_version
