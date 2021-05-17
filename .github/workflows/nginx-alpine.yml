@@ -24,7 +24,8 @@ jobs:
         run: |
           sudo -E apt-get -qq update
           sudo -E apt-get -qq install jq git
-          export LATEST_TAG=$(echo -n $(curl -s "https://registry.hub.docker.com/v1/repositories/${DOCKER_REPO_NAME}/tags" | jq -r 'sort_by(.name) | reverse | .[1].name'))
+          export QUREY_PARAMS="?page_size=1&page=1&ordering=last_updated"
+          export LATEST_TAG=$(echo -n $(curl -s "https://hub.docker.com/v2/repositories/${DOCKER_REPO_NAME}/tags/${QUREY_PARAMS}" | jq -r '.results[0].name'))
           git clone https://github.com/nginx/nginx.git $GITHUB_WORKSPACE/tmp/nginx
           cd $GITHUB_WORKSPACE/tmp/nginx
           export NGINX_VERSION=$(echo -n $(git describe --tags $(git rev-list --tags --max-count=1) | cut -d "-" -f2))

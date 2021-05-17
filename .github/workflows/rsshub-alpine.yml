@@ -22,7 +22,8 @@ jobs:
         run: |
           sudo -E apt-get -qq update
           sudo -E apt-get -qq install jq
-          export LATEST_TAG=$(echo -n $(curl -s "https://registry.hub.docker.com/v1/repositories/${DOCKER_REPO_NAME}/tags" | jq -r 'sort_by(.name) | reverse | .[1].name'))
+          export QUREY_PARAMS="?page_size=1&page=1&ordering=last_updated"
+          export LATEST_TAG=$(echo -n $(curl -s "https://hub.docker.com/v2/repositories/${DOCKER_REPO_NAME}/tags/${QUREY_PARAMS}" | jq -r '.results[0].name'))
           export RSSHUB_VERSION=$(echo -n $(date -d@$(curl -u $GITHUB_USERNAME:$GITHUB_TOKEN -s https://api.github.com/repos/DIYgod/RSSHub/commits | jq -r 'sort_by(.commit.author.date) | last | .commit.author.date | fromdate') +'%y.%m.%d'))
           echo ::set-output name=LATEST_TAG::$LATEST_TAG
           echo ::set-output name=RSSHUB_VERSION::$RSSHUB_VERSION
