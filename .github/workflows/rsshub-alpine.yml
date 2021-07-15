@@ -2,6 +2,7 @@ name: rsshub-alpine
 on:
   schedule:
     - cron: '0 0 5/15 * *'
+  workflow_dispatch:
   repository_dispatch:
     types: 'build-rsshub'
 
