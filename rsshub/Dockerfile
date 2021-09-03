@@ -12,7 +12,7 @@ RUN apk add --no-cache --virtual .build-deps \
   build-base
 
 RUN cd / && \
-  git clone --branch=master https://github.com/RookieZoe/RSSHub.git && \
+  git clone -b selfhost --single-branch https://github.com/RookieZoe/RSSHub.git /RSSHub && \
   cd /RSSHub && \
   export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true && \
   yarn --production
