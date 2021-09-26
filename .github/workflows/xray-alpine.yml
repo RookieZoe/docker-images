@@ -35,6 +35,10 @@ jobs:
     needs: get_env
     steps:
       - uses: actions/checkout@v2
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
@@ -46,5 +50,6 @@ jobs:
           push: true
           tags: ${{ env.DOCKER_REPO_NAME }}:latest,${{ env.DOCKER_REPO_NAME }}:${{ needs.get_env.outputs.XRAY_VERSION }}
           context: ./xray
+          platforms: linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/ppc64le,linux/s390x
           build-args: |
-            xray_version=${{ needs.get_env.outputs.XRAY_VERSION }}
+            XRAY_VERSION=${{ needs.get_env.outputs.XRAY_VERSION }}
