@@ -10,22 +10,22 @@ else
 fi
 
 if [ "$1" = "xray" ]; then
-  if /usr/bin/find "/docker-entrypoint.d/" -mindepth 1 -maxdepth 1 -type f -print -quit 2>/dev/null | read v; then
+  if /usr/bin/find "/docker-entrypoint.d/" -mindepth 1 -maxdepth 1 -type f -print -quit 2>/dev/null | read -r; then
     echo >&3 "$0: /docker-entrypoint.d/ is not empty, will attempt to perform configuration"
 
     echo >&3 "$0: Looking for shell scripts in /docker-entrypoint.d/"
     find "/docker-entrypoint.d/" -follow -type f -print | sort -V | while read -r f; do
       case "$f" in
-        *.sh)
-          if [ -x "$f" ]; then
-            echo >&3 "$0: Launching $f";
-            "$f"
-          else
-            # warn on shell scripts without exec bit
-            echo >&3 "$0: Ignoring $f, not executable";
-          fi
-          ;;
-        *) echo >&3 "$0: Ignoring $f";;
+      *.sh)
+        if [ -x "$f" ]; then
+          echo >&3 "$0: Launching $f"
+          "$f"
+        else
+          # warn on shell scripts without exec bit
+          echo >&3 "$0: Ignoring $f, not executable"
+        fi
+        ;;
+      *) echo >&3 "$0: Ignoring $f" ;;
       esac
     done
 
