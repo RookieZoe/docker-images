@@ -1,14 +1,19 @@
-FROM nginx:stable-alpine AS builder
+FROM --platform=$TARGETPLATFORM nginx:stable-alpine AS builder
 
-ARG nginx_version
-ARG nchan_latest_tar
-ARG headers_more_latest_tar
-ENV NGINX_VERSION=$nginx_version
+ARG NGINX_VERSION
+ARG NCHAN_VERSION
+ARG HEADERS_MORE_VERSION
+ARG NGINX_SOURCE
+ARG NCHAN_SOURCE
+ARG HEADERS_MORE_SOURCE
 
-# Download sources
-RUN wget "http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz" -O nginx.tar.gz && \
-  wget "${nchan_latest_tar}" -O nchan.tar.gz && \
-  wget "${headers_more_latest_tar}" -O headers-more-nginx-module.tar.gz
+ENV NGINX_VERSION=$NGINX_VERSION
+ENV NCHAN_VERSION=$NCHAN_VERSION
+ENV HEADERS_MORE_VERSION=$HEADERS_MORE_VERSION
+
+ADD $NGINX_SOURCE /usr/src/nginx
+ADD $NCHAN_SOURCE /usr/src/nchan
+ADD $HEADERS_MORE_SOURCE /usr/src/headers-more-nginx-module
 
 # For latest build deps, see https://github.com/nginxinc/docker-nginx/blob/master/mainline/alpine/Dockerfile
 RUN apk add --no-cache --virtual .build-deps \
@@ -28,22 +33,22 @@ RUN apk add --no-cache --virtual .build-deps \
 # Reuse same cli arguments as the nginx:stable-alpine image used to build
 RUN CONFARGS=$(nginx -V 2>&1 | sed -n -e 's/^.*arguments: //p') && \
   CONFARGS=${CONFARGS/-Os -fomit-frame-pointer -g/-Os} && \
-  mkdir /usr/src && \
-  tar -zxC /usr/src -f nginx.tar.gz && \
-  mkdir ./nchan && \
-  mkdir ./headers-more-nginx-module && \
-  tar -xzC ./nchan -f nchan.tar.gz --strip-components 1 && \
-  tar -xzC ./headers-more-nginx-module -f headers-more-nginx-module.tar.gz --strip-components 1 && \
-  NCHAN_DIR="$(pwd)/nchan" && \
-  HEADERS_MORE_DIR="$(pwd)/headers-more-nginx-module" && \
-  cd /usr/src/nginx-$NGINX_VERSION && \
-  ./configure --with-compat $CONFARGS --add-dynamic-module=$NCHAN_DIR --add-dynamic-module=$HEADERS_MORE_DIR && \
+  cd /usr/src/nginx && \
+  CFLAGS=${CFLAGS:-} && \
+  CFLAGS="$CFLAGS -Wno-error" ./configure \
+    --with-compat $CONFARGS \
+    --add-dynamic-module=/usr/src/nchan \
+    --add-dynamic-module=/usr/src/headers-more-nginx-module && \
   make && make install
 
-FROM nginx:stable-alpine
+FROM --platform=$TARGETPLATFORM nginx:stable-alpine
 LABEL maintainer="Rookie_Zoe <i@rookiezoe.com>"
-ARG nginx_version
-ENV NGINX_VERSION=$nginx_version
+ARG NGINX_VERSION
+ARG NCHAN_VERSION
+ARG HEADERS_MORE_VERSION
+ENV NGINX_VERSION=$NGINX_VERSION
+ENV NCHAN_VERSION=$NCHAN_VERSION
+ENV HEADERS_MORE_VERSION=$HEADERS_MORE_VERSION
 COPY --from=builder /etc/nginx /etc/nginx
 COPY --from=builder /usr/lib/nginx /usr/lib/nginx
 COPY --from=builder /usr/sbin/nginx /usr/sbin/nginx

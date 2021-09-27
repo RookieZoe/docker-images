@@ -14,9 +14,12 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       LATEST_TAG: ${{ steps.set_outputs.outputs.LATEST_TAG }}
+      NGINX_TAR: ${{ steps.set_outputs.outputs.NGINX_TAR }}
       NGINX_VERSION: ${{ steps.set_outputs.outputs.NGINX_VERSION }}
-      NCHAN_LATEST_TAR: ${{ steps.set_outputs.outputs.NCHAN_LATEST_TAR }}
-      HEADERS_MORE_LATEST_TAR: ${{ steps.set_outputs.outputs.HEADERS_MORE_LATEST_TAR }}
+      NCHAN_TAR: ${{ steps.set_outputs.outputs.NCHAN_TAR }}
+      NCHAN_VERSION: ${{ steps.set_outputs.outputs.NCHAN_VERSION }}
+      HEADERS_MORE_TAR: ${{ steps.set_outputs.outputs.HEADERS_MORE_TAR }}
+      HEADERS_MORE_VERSION: ${{ steps.set_outputs.outputs.HEADERS_MORE_VERSION }}
     steps:
       - id: set_outputs
         env:
@@ -29,20 +32,25 @@ jobs:
           export LATEST_TAG=$(echo -n $(curl -s "https://hub.docker.com/v2/repositories/${DOCKER_REPO_NAME}/tags/${QUREY_PARAMS}" | jq -r '.results | sort_by(.name) | first | .name'))
           git clone https://github.com/nginx/nginx.git $GITHUB_WORKSPACE/tmp/nginx
           cd $GITHUB_WORKSPACE/tmp/nginx
-          export NGINX_VERSION=$(echo -n $(git describe --tags $(git rev-list --tags --max-count=1) | cut -d "-" -f2))
-          cd $GITHUB_WORKSPACE
+          export NGINX_VERSION=$(git describe --tags $(git rev-list --tags --max-count=1) | cut -d "-" -f2)
+          export NGINX_TAR="http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz"
           git clone https://github.com/slact/nchan.git $GITHUB_WORKSPACE/tmp/nchan
           cd $GITHUB_WORKSPACE/tmp/nchan
-          export NCHAN_LATEST_TAR="https://github.com/slact/nchan/archive/$(echo -n $(git describe --tags $(git rev-list --tags --max-count=1))).tar.gz"
-          cd $GITHUB_WORKSPACE
+          export NCHAN_LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
+          export NCHAN_VERSION=$(echo $NCHAN_LATEST_TAG | cut -d "v" -f2)
+          export NCHAN_TAR="https://github.com/slact/nchan/archive/$NCHAN_LATEST_TAG.tar.gz"
           git clone https://github.com/openresty/headers-more-nginx-module.git $GITHUB_WORKSPACE/tmp/headers-more-nginx-module
           cd $GITHUB_WORKSPACE/tmp/headers-more-nginx-module
-          export HEADERS_MORE_LATEST_TAR="https://github.com/openresty/headers-more-nginx-module/archive/$(echo -n $(git describe --tags $(git rev-list --tags --max-count=1))).tar.gz"
-          cd $GITHUB_WORKSPACE
+          export HEADERS_MORE_LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
+          export HEADERS_MORE_VERSION=$(echo $HEADERS_MORE_LATEST_TAG | cut -d "v" -f2)
+          export HEADERS_MORE_TAR="https://github.com/openresty/headers-more-nginx-module/archive/$HEADERS_MORE_LATEST_TAG.tar.gz"
           echo ::set-output name=LATEST_TAG::$LATEST_TAG
+          echo ::set-output name=NGINX_TAR::$NGINX_TAR
           echo ::set-output name=NGINX_VERSION::$NGINX_VERSION
-          echo ::set-output name=NCHAN_LATEST_TAR::$NCHAN_LATEST_TAR
-          echo ::set-output name=HEADERS_MORE_LATEST_TAR::$HEADERS_MORE_LATEST_TAR
+          echo ::set-output name=NCHAN_TAR::$NCHAN_TAR
+          echo ::set-output name=NCHAN_VERSION::$NCHAN_VERSION
+          echo ::set-output name=HEADERS_MORE_TAR::$HEADERS_MORE_TAR
+          echo ::set-output name=HEADERS_MORE_VERSION::$HEADERS_MORE_VERSION
 
   publish:
     if: needs.get_env.outputs.LATEST_TAG != needs.get_env.outputs.NGINX_VERSION
@@ -50,6 +58,25 @@ jobs:
     needs: get_env
     steps:
       - uses: actions/checkout@v2
+      - name: Get source codes
+        env:
+          DEBIAN_FRONTEND: noninteractive
+          NGINX_TAR: ${{ needs.get_env.outputs.NGINX_TAR }}
+          NCHAN_TAR: ${{ needs.get_env.outputs.NCHAN_TAR }}
+          HEADERS_MORE_TAR: ${{ needs.get_env.outputs.HEADERS_MORE_TAR }}
+        run: |
+          wget "$NGINX_TAR" -O "$GITHUB_WORKSPACE/nginx/nginx_source.tar.gz"
+          wget "$NCHAN_TAR" -O "$GITHUB_WORKSPACE/nginx/nchan.tar.gz"
+          wget "$HEADERS_MORE_TAR" -O "$GITHUB_WORKSPACE/nginx/headers-more-nginx-module.tar.gz"
+          cd "$GITHUB_WORKSPACE/nginx/"
+          mkdir -p nginx_source nchan headers-more-nginx-module
+          tar -zxf nginx_source.tar.gz --strip-components 1 -C ./nginx_source
+          tar -xzf nchan.tar.gz --strip-components 1 -C ./nchan
+          tar -xzf headers-more-nginx-module.tar.gz --strip-components 1 -C ./headers-more-nginx-module
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
@@ -61,7 +88,11 @@ jobs:
           push: true
           tags: ${{ env.DOCKER_REPO_NAME }}:latest,${{ env.DOCKER_REPO_NAME }}:${{ needs.get_env.outputs.NGINX_VERSION }}
           context: ./nginx
+          platforms: linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/ppc64le,linux/s390x
           build-args: |
-            nginx_version=${{ needs.get_env.outputs.NGINX_VERSION }}
-            nchan_latest_tar=${{ needs.get_env.outputs.NCHAN_LATEST_TAR }}
-            headers_more_latest_tar=${{ needs.get_env.outputs.HEADERS_MORE_LATEST_TAR }}
+            NGINX_VERSION=${{ needs.get_env.outputs.NGINX_VERSION }}
+            NCHAN_VERSION=${{ needs.get_env.outputs.NCHAN_VERSION }}
+            HEADERS_MORE_VERSION=${{ needs.get_env.outputs.HEADERS_MORE_VERSION }}
+            NGINX_SOURCE=nginx_source
+            NCHAN_SOURCE=nchan
+            HEADERS_MORE_SOURCE=headers-more-nginx-module
