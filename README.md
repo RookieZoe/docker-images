@@ -4,9 +4,8 @@ Some self-build images for self-host.
 
 ## 1. nginx
 
-[![nginx](https://dockeri.co/image/rookiezoe/nginx)](https://hub.docker.com/r/rookiezoe/nginx)
-
-[![status](https://github.com/RookieZoe/docker-images/workflows/nginx-alpine/badge.svg)](https://github.com/RookieZoe/docker-images/actions?query=workflow%3Anginx-alpine)
+[![status](https://img.shields.io/github/workflow/status/RookieZoe/docker-images/nginx-alpine?color=34d058&label=nginx&logo=github&logoColor=fff)](https://github.com/RookieZoe/docker-images/actions/workflows/nginx-alpine.yml)
+[![rookiezoe/nginx:latest](https://img.shields.io/docker/v/rookiezoe/nginx?label=rookiezoe%2Fnginx%3Alatest&logo=docker&logoColor=fff)](https://hub.docker.com/r/rookiezoe/nginx/tags?page=1&ordering=last_updated)
 
 [nginx](https://nginx.org/download) docker image with [headers-more-nginx-module](https://github.com/openresty/headers-more-nginx-module/releases) and [nchan](https://github.com/slact/nchan/releases) module.
 
@@ -23,9 +22,8 @@ Some self-build images for self-host.
 
 ## 2. rsshub
 
-[![rsshub](https://dockeri.co/image/rookiezoe/rsshub)](https://hub.docker.com/r/rookiezoe/rsshub)
-
-[![status](https://github.com/RookieZoe/docker-images/workflows/rsshub-alpine/badge.svg)](https://github.com/RookieZoe/docker-images/actions?query=workflow%3Arsshub-alpine)
+[![status](https://img.shields.io/github/workflow/status/RookieZoe/docker-images/rsshub-alpine?color=34d058&label=rsshub&logo=github&logoColor=fff)](https://github.com/RookieZoe/docker-images/actions/workflows/rsshub-alpine.yml)
+[![rookiezoe/rsshub:latest](https://img.shields.io/docker/v/rookiezoe/rsshub?label=rookiezoe%2Frsshub%3Alatest&logo=docker&logoColor=fff)](https://hub.docker.com/r/rookiezoe/rsshub/tags?page=1&ordering=last_updated)
 
 [rsshub](https://github.com/DIYgod/RSSHub) docker image.
 
@@ -35,8 +33,7 @@ Some self-build images for self-host.
 
 ## 3. xray
 
-[![xray](https://dockeri.co/image/rookiezoe/xray)](https://hub.docker.com/r/rookiezoe/xray)
-
-[![status](https://github.com/RookieZoe/docker-images/workflows/xray-alpine/badge.svg)](https://github.com/RookieZoe/docker-images/actions?query=workflow%3Axray-alpine)
+[![status](https://img.shields.io/github/workflow/status/RookieZoe/docker-images/xray-alpine?color=34d058&label=xray&logo=github&logoColor=fff)](https://github.com/RookieZoe/docker-images/actions/workflows/xray-alpine.yml)
+[![rookiezoe/xray:latest](https://img.shields.io/docker/v/rookiezoe/xray?label=rookiezoe%2Fxray%3Alatest&logo=docker&logoColor=fff)](https://hub.docker.com/r/rookiezoe/xray/tags?page=1&ordering=last_updated)
 
 [xray](https://github.com/XTLS/Xray-core) docker image, base on [teddysun](https://github.com/teddysun)'s Dockerfile.
