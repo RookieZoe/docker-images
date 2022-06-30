@@ -18,8 +18,6 @@ jobs:
       NGINX_VERSION: ${{ steps.set_outputs.outputs.NGINX_VERSION }}
       NCHAN_TAR: ${{ steps.set_outputs.outputs.NCHAN_TAR }}
       NCHAN_VERSION: ${{ steps.set_outputs.outputs.NCHAN_VERSION }}
-      HEADERS_MORE_TAR: ${{ steps.set_outputs.outputs.HEADERS_MORE_TAR }}
-      HEADERS_MORE_VERSION: ${{ steps.set_outputs.outputs.HEADERS_MORE_VERSION }}
     steps:
       - id: set_outputs
         env:
@@ -39,18 +37,11 @@ jobs:
           export NCHAN_LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
           export NCHAN_VERSION=$(echo $NCHAN_LATEST_TAG | cut -d "v" -f2)
           export NCHAN_TAR="https://github.com/slact/nchan/archive/$NCHAN_LATEST_TAG.tar.gz"
-          git clone https://github.com/openresty/headers-more-nginx-module.git $GITHUB_WORKSPACE/tmp/headers-more-nginx-module
-          cd $GITHUB_WORKSPACE/tmp/headers-more-nginx-module
-          export HEADERS_MORE_LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
-          export HEADERS_MORE_VERSION=$(echo $HEADERS_MORE_LATEST_TAG | cut -d "v" -f2)
-          export HEADERS_MORE_TAR="https://github.com/openresty/headers-more-nginx-module/archive/$HEADERS_MORE_LATEST_TAG.tar.gz"
           echo ::set-output name=LATEST_TAG::$LATEST_TAG
           echo ::set-output name=NGINX_TAR::$NGINX_TAR
           echo ::set-output name=NGINX_VERSION::$NGINX_VERSION
           echo ::set-output name=NCHAN_TAR::$NCHAN_TAR
           echo ::set-output name=NCHAN_VERSION::$NCHAN_VERSION
-          echo ::set-output name=HEADERS_MORE_TAR::$HEADERS_MORE_TAR
-          echo ::set-output name=HEADERS_MORE_VERSION::$HEADERS_MORE_VERSION
 
   publish:
     if: needs.get_env.outputs.LATEST_TAG != needs.get_env.outputs.NGINX_VERSION
@@ -63,7 +54,7 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
           NGINX_TAR: ${{ needs.get_env.outputs.NGINX_TAR }}
           NCHAN_TAR: ${{ needs.get_env.outputs.NCHAN_TAR }}
-          HEADERS_MORE_TAR: ${{ needs.get_env.outputs.HEADERS_MORE_TAR }}
+          HEADERS_MORE_TAR: https://github.com/openresty/headers-more-nginx-module/archive/master.tar.gz
         run: |
           wget "$NGINX_TAR" -O "$GITHUB_WORKSPACE/nginx/nginx_source.tar.gz"
           wget "$NCHAN_TAR" -O "$GITHUB_WORKSPACE/nginx/nchan.tar.gz"
@@ -92,7 +83,7 @@ jobs:
           build-args: |
             NGINX_VERSION=${{ needs.get_env.outputs.NGINX_VERSION }}
             NCHAN_VERSION=${{ needs.get_env.outputs.NCHAN_VERSION }}
-            HEADERS_MORE_VERSION=${{ needs.get_env.outputs.HEADERS_MORE_VERSION }}
+            HEADERS_MORE_VERSION=master
             NGINX_SOURCE=nginx_source
             NCHAN_SOURCE=nchan
             HEADERS_MORE_SOURCE=headers-more-nginx-module
