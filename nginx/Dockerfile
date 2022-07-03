@@ -21,14 +21,17 @@ RUN apk add --no-cache --virtual .build-deps \
   libc-dev \
   make \
   openssl-dev \
-  pcre-dev \
+  pcre2-dev \
   zlib-dev \
   linux-headers \
-  curl \
-  gnupg \
   libxslt-dev \
   gd-dev \
-  geoip-dev
+  geoip-dev \
+  perl-dev \
+  libedit-dev \
+  bash \
+  alpine-sdk \
+  findutils
 
 # Reuse same cli arguments as the nginx:stable-alpine image used to build
 RUN CONFARGS=$(nginx -V 2>&1 | sed -n -e 's/^.*arguments: //p') && \
