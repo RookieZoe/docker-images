@@ -25,7 +25,7 @@ jobs:
           sudo -E apt-get -qq install jq
           export QUREY_PARAMS="?page_size=2&page=1&ordering=last_updated"
           export LATEST_TAG=$(echo -n $(curl -s "https://hub.docker.com/v2/repositories/${DOCKER_REPO_NAME}/tags/${QUREY_PARAMS}" | jq -r '.results | sort_by(.name) | first | .name'))
-          export XRAY_VERSION=$(echo -n $(curl -s https://api.github.com/repos/XTLS/Xray-core/releases | jq -r 'sort_by(.tag_name) | last | .tag_name'))
+          export XRAY_VERSION=$(echo -n $(curl -s https://api.github.com/repos/XTLS/Xray-core/releases | jq -r 'sort_by(.tag_name) | last | .tag_name' | awk -Fv '{print $2}'))
           echo ::set-output name=LATEST_TAG::$LATEST_TAG
           echo ::set-output name=XRAY_VERSION::$XRAY_VERSION
 
