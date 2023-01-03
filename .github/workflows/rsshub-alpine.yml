@@ -24,8 +24,8 @@ jobs:
           export QUREY_PARAMS="?page_size=2&page=1&ordering=last_updated"
           export LATEST_TAG=$(echo -n $(curl -s "https://hub.docker.com/v2/repositories/${DOCKER_REPO_NAME}/tags/${QUREY_PARAMS}" | jq -r '.results | sort_by(.name) | first | .name'))
           export RSSHUB_VERSION=$(echo -n $(date -d@$(curl -u $GITHUB_USERNAME:$GITHUB_TOKEN -s 'https://api.github.com/repos/DIYgod/RSSHub/commits?sha=master' | jq -r 'sort_by(.commit.author.date) | last | .commit.author.date | fromdate') +'%y.%m.%d'))
-          echo ::set-output name=LATEST_TAG::$LATEST_TAG
-          echo ::set-output name=RSSHUB_VERSION::$RSSHUB_VERSION
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_OUTPUT
+          echo "RSSHUB_VERSION=$RSSHUB_VERSION" >> $GITHUB_OUTPUT
 
   publish:
     if: needs.get_env.outputs.LATEST_TAG != needs.get_env.outputs.RSSHUB_VERSION

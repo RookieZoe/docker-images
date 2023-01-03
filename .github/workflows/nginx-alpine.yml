@@ -37,11 +37,11 @@ jobs:
           export NCHAN_LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
           export NCHAN_VERSION=$(echo $NCHAN_LATEST_TAG | cut -d "v" -f2)
           export NCHAN_TAR="https://github.com/slact/nchan/archive/$NCHAN_LATEST_TAG.tar.gz"
-          echo ::set-output name=LATEST_TAG::$LATEST_TAG
-          echo ::set-output name=NGINX_TAR::$NGINX_TAR
-          echo ::set-output name=NGINX_VERSION::$NGINX_VERSION
-          echo ::set-output name=NCHAN_TAR::$NCHAN_TAR
-          echo ::set-output name=NCHAN_VERSION::$NCHAN_VERSION
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_OUTPUT
+          echo "NGINX_TAR=$NGINX_TAR" >> $GITHUB_OUTPUT
+          echo "NGINX_VERSION=$NGINX_VERSION" >> $GITHUB_OUTPUT
+          echo "NCHAN_TAR=$NCHAN_TAR" >> $GITHUB_OUTPUT
+          echo "NCHAN_VERSION=$NCHAN_VERSION" >> $GITHUB_OUTPUT
 
   publish:
     if: needs.get_env.outputs.LATEST_TAG != needs.get_env.outputs.NGINX_VERSION
