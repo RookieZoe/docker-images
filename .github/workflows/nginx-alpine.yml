@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: get_env
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Get source codes
         env:
           DEBIAN_FRONTEND: noninteractive
@@ -65,11 +65,11 @@ jobs:
           tar -xzf nchan.tar.gz --strip-components 1 -C ./nchan
           tar -xzf headers-more-nginx-module.tar.gz --strip-components 1 -C ./headers-more-nginx-module
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
       - name: Login to DockerHub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
