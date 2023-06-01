@@ -1,4 +1,4 @@
-FROM --platform=$TARGETPLATFORM node:14-alpine3.14 AS builder
+FROM --platform=$TARGETPLATFORM node:20.2.0-alpine3.17 AS builder
 
 ARG RSSHub
 ENV NODE_ENV production
@@ -24,7 +24,7 @@ RUN mkdir -p /app && \
   mv /RSSHub/node_modules /app/node_modules && \
   mv /RSSHub/package.json /app/package.json
 
-FROM --platform=$TARGETPLATFORM node:14-alpine3.14
+FROM --platform=$TARGETPLATFORM node:20.2.0-alpine3.17
 LABEL maintainer="Rookie_Zoe <i@rookiezoe.com>"
 ENV NODE_ENV production
 ENV TZ Asia/Shanghai
