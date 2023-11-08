@@ -1,8 +1,6 @@
 name: rsshub-alpine
 on:
   workflow_dispatch:
-  repository_dispatch:
-    types: 'build-rsshub'
 
 env:
   DOCKER_REPO_NAME: rookiezoe/rsshub

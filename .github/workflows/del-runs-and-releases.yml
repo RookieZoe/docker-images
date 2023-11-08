@@ -1,7 +1,7 @@
 name: del runs and releases
 on:
   schedule:
-    - cron: '0 1 5/15 * *'
+    - cron: '0 1 * * *'
   workflow_dispatch:
     inputs:
       retain_days:
@@ -22,7 +22,7 @@ jobs:
             const notafter = new Date().getTime() - retain_days * 24 * 60 * 60 * 1000;
             console.log('>>>>>> Listing workflow_runs');
             github.rest.actions
-              .listWorkflowRunsForRepo({ owner, repo })
+              .listWorkflowRunsForRepo({ owner, repo, per_page: 100 })
               .then(({ data }) => {
                 console.log('>>>>>> Done, now delete workflow_runs...');
                 (data.workflow_runs || [])
@@ -54,7 +54,7 @@ jobs:
             const notafter = new Date().getTime() - retain_days * 24 * 60 * 60 * 1000;
             console.log('>>>>>> Listing releases');
             github.rest.repos
-              .listReleases({ owner, repo })
+              .listReleases({ owner, repo, per_page: 100 })
               .then(({ data }) => {
                 console.log('>>>>>> Done, now delete releases...');
                 (data || [])

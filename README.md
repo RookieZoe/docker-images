@@ -34,6 +34,21 @@ Some self-build images for self-host.
 ## 3. xray
 
 [![status](https://img.shields.io/github/actions/workflow/status/RookieZoe/docker-images/xray-alpine.yml?label=xray&logo=github&logoColor=959da5)](https://github.com/RookieZoe/docker-images/actions/workflows/xray-alpine.yml)
-[![rookiezoe/xray:latest](https://img.shields.io/docker/v/rookiezoe/xray??color=086dd7&label=rookiezoe%2Fxray%3Alatest&logo=docker&logoColor=fff)](https://hub.docker.com/r/rookiezoe/xray/tags?page=1&ordering=last_updated)
+[![rookiezoe/xray:latest](https://img.shields.io/docker/v/rookiezoe/xray?color=086dd7&label=rookiezoe%2Fxray%3Alatest&logo=docker&logoColor=fff)](https://hub.docker.com/r/rookiezoe/xray/tags?page=1&ordering=last_updated)
 
 [xray](https://github.com/XTLS/Xray-core) docker image, base on [teddysun](https://github.com/teddysun)'s Dockerfile.
+
+## 4. epub2audiobook
+
+[![status](https://img.shields.io/github/actions/workflow/status/RookieZoe/docker-images/epub2audiobook.yml?label=epub2audiobook&logo=github&logoColor=959da5)](https://github.com/RookieZoe/docker-images/actions/workflows/epub2audiobook.yml)
+[![rookiezoe/epub2audiobook:latest](https://img.shields.io/docker/v/rookiezoe/epub2audiobook?color=086dd7&label=rookiezoe%2Fepub2audiobook%3Alatest&logo=docker&logoColor=fff)](https://hub.docker.com/r/rookiezoe/epub2audiobook/tags?page=1&ordering=last_updated)
+
+Thanks to [p0n1/epub_to_audiobook](https://github.com/p0n1/epub_to_audiobook)
+
+> Usage:
+>
+> run as a buddy server with your audiobookshelf, such as:
+> run `docker-compose up -d` with the following [docker-compose.example.yml](epub2audiobook/docker-compose.example.yml)
+> then you can keep it running in the background.
+> when you need to convert a epub file, just run:
+> docker exec epub2audiobook python epub2audiobook.py /books/bookauthor/bookname/bookname.epub /books/bookauthor/bookname/ --voice_name zh-CN-XiaoxiaoNeural --language zh-CN

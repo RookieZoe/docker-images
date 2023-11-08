@@ -1,0 +1,28 @@
+version: '3.7'
+services:
+  epub2audiobook:
+    image: rookiezoe/epub2audiobook:latest
+    volumes:
+      - ./audiobooks:/books
+      - ./test:/test
+    restart: unless-stopped
+    environment:
+      - MS_TTS_REGION=your_azune_tts_region
+      - MS_TTS_KEY=your_azune_tts_key
+    network_mode: bridge
+    container_name: epub2audiobook
+  # docker exec -it epub2audiobook bash
+  # python epub2audiobook.py /books/bookauthor/bookname/bookname.epub /books/bookauthor/bookname/ --voice_name zh-CN-XiaoxiaoNeural --language zh-CN
+
+  audiobookshelf:
+    image: advplyr/audiobookshelf:latest
+    ports:
+      - 80:80
+    volumes:
+      - ./audiobooks:/audiobooks
+      - ./podcasts:/podcasts
+      - ./config:/config
+      - ./metadata:/metadata
+    restart: unless-stopped
+    network_mode: bridge
+    container_name: audiobookshelf
