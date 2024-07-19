@@ -16,7 +16,7 @@ ADD $NCHAN_SOURCE /usr/src/nchan
 ADD $HEADERS_MORE_SOURCE /usr/src/headers-more-nginx-module
 
 # For latest build deps, see https://github.com/nginxinc/docker-nginx/blob/master/mainline/alpine/Dockerfile
-RUN apk add --no-cache --virtual .build-deps \
+RUN apk update && apk upgrade && apk add --no-cache --virtual .build-deps \
   gcc \
   libc-dev \
   make \

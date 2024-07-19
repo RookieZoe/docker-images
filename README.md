@@ -20,17 +20,6 @@ Some self-build images for self-host.
 >
 > Then, the other config is as same as official [docker-image](https://hub.docker.com/_/nginx)'s config.
 
-## 2. rsshub
-
-[![status](https://img.shields.io/github/actions/workflow/status/RookieZoe/docker-images/rsshub-alpine.yml?label=rsshub&logo=github&logoColor=959da5)](https://github.com/RookieZoe/docker-images/actions/workflows/rsshub-alpine.yml)
-[![rookiezoe/rsshub:latest](https://img.shields.io/docker/v/rookiezoe/rsshub?color=086dd7&label=rookiezoe%2Frsshub%3Alatest&logo=docker&logoColor=fff)](https://hub.docker.com/r/rookiezoe/rsshub/tags?page=1&ordering=last_updated)
-
-[rsshub](https://github.com/DIYgod/RSSHub) docker image.
-
-> Usage:
->
-> Deploy configuration: as same as offical config: [Configuration](https://docs.rsshub.app/en/install/#configuration-3)
-
 ## 3. xray
 
 [![status](https://img.shields.io/github/actions/workflow/status/RookieZoe/docker-images/xray-alpine.yml?label=xray&logo=github&logoColor=959da5)](https://github.com/RookieZoe/docker-images/actions/workflows/xray-alpine.yml)
