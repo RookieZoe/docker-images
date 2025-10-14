@@ -20,6 +20,13 @@ Some self-build images for self-host.
 >
 > Then, the other config is as same as official [docker-image](https://hub.docker.com/_/nginx)'s config.
 
+## 2. caddy
+
+[![status](https://img.shields.io/github/actions/workflow/status/RookieZoe/docker-images/caddy-alpine.yml?label=caddy&logo=github&logoColor=959da5)](https://github.com/RookieZoe/docker-images/actions/workflows/caddy-alpine.yml)
+[![rookiezoe/caddy:latest](https://img.shields.io/docker/v/rookiezoe/caddy?color=086dd7&label=rookiezoe%2Fcaddy%3Alatest&logo=docker&logoColor=fff)](https://hub.docker.com/r/rookiezoe/caddy/tags?page=1&ordering=last_updated)
+
+[caddy](https://caddyserver.com/docs/) docker image with [caddy-docker](https://github.com/caddy-docker/caddy-docker) support.
+
 ## 3. xray
 
 [![status](https://img.shields.io/github/actions/workflow/status/RookieZoe/docker-images/xray-alpine.yml?label=xray&logo=github&logoColor=959da5)](https://github.com/RookieZoe/docker-images/actions/workflows/xray-alpine.yml)
