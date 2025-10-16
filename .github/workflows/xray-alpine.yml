@@ -1,4 +1,5 @@
 name: xray-alpine
+
 on:
   schedule:
     - cron: '0 0 * * *'
@@ -27,27 +28,44 @@ jobs:
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_OUTPUT
           echo "XRAY_VERSION=$XRAY_VERSION" >> $GITHUB_OUTPUT
 
-  publish:
+  docker:
     if: needs.get_env.outputs.LATEST_TAG != needs.get_env.outputs.XRAY_VERSION
     runs-on: ubuntu-latest
     needs: get_env
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DOCKER_REPO_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ needs.get_env.outputs.XRAY_VERSION }}
+
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: Publish to DockerHub
-        uses: docker/build-push-action@v4
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
         with:
-          push: true
-          tags: ${{ env.DOCKER_REPO_NAME }}:latest,${{ env.DOCKER_REPO_NAME }}:${{ needs.get_env.outputs.XRAY_VERSION }}
           context: ./xray
           platforms: linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/ppc64le,linux/s390x
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           build-args: |
             XRAY_VERSION=${{ needs.get_env.outputs.XRAY_VERSION }}
