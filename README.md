@@ -16,9 +16,14 @@ Some self-build images for self-host.
 > ```nginx.conf
 > load_module modules/ngx_nchan_module.so;
 > load_module modules/ngx_http_headers_more_filter_module.so;
+> load_module modules/ngx_http_acme_module.so;
 > ```
 >
 > Then, the other config is as same as official [docker-image](https://hub.docker.com/_/nginx)'s config.
+> acme module usage reference: [nginx/nginx-acme-example.conf](nginx/nginx-acme-example.conf)
+
+> Caution:
+> The official acme module requires a minimum Nginx version of 1.25.1, with a recommended production version of 1.28.0+. The Nginx images built in this repository are effective from version 1.29.2 onwards.
 
 ## 2. caddy
 
