@@ -4,7 +4,7 @@ ARG NGINX_VERSION
 ARG NCHAN_VERSION
 ARG HEADERS_MORE_VERSION
 
-# Install build dependencies
+# Install build dependencies including Rust for ACME module
 RUN apk add --no-cache --virtual .build-deps \
   gcc \
   libc-dev \
@@ -22,7 +22,11 @@ RUN apk add --no-cache --virtual .build-deps \
   alpine-sdk \
   findutils \
   curl \
-  git
+  git \
+  cargo \
+  rust \
+  clang-dev \
+  pkgconfig
 
 # Download nginx source
 RUN cd /tmp && \
@@ -38,6 +42,10 @@ RUN cd /tmp && \
 RUN cd /tmp && \
   curl -fSL https://github.com/openresty/headers-more-nginx-module/archive/v${HEADERS_MORE_VERSION}.tar.gz -o headers-more.tar.gz && \
   tar -zxC /tmp -f headers-more.tar.gz
+
+# Clone nginx-acme module
+RUN cd /tmp && \
+  git clone --depth 1 https://github.com/nginx/nginx-acme.git
 
 # Build nginx with modules
 RUN cd /tmp/nginx-${NGINX_VERSION} && \
@@ -84,9 +92,10 @@ RUN cd /tmp/nginx-${NGINX_VERSION} && \
   --with-stream_ssl_preread_module \
   --add-dynamic-module=/tmp/nchan-${NCHAN_VERSION} \
   --add-dynamic-module=/tmp/headers-more-nginx-module-${HEADERS_MORE_VERSION} \
+  --add-dynamic-module=/tmp/nginx-acme \
   --with-cc-opt='-Os -fomit-frame-pointer -g -Wno-error=format' \
   --with-ld-opt=-Wl,--as-needed,-O1,--sort-common && \
-  make -j$(getconf _NPROCESSORS_ONLN) && \
+  make -j$(getconf _NPROCESSORS_ONLN) modules && \
   make install
 
 FROM nginx:stable-alpine
@@ -104,12 +113,13 @@ ENV HEADERS_MORE_VERSION=$HEADERS_MORE_VERSION
 COPY --from=builder /usr/sbin/nginx /usr/sbin/nginx
 COPY --from=builder /usr/lib/nginx/modules /usr/lib/nginx/modules
 
-# Create cache directories
+# Create cache and acme directories
 RUN mkdir -p /var/cache/nginx/client_temp \
   /var/cache/nginx/proxy_temp \
   /var/cache/nginx/fastcgi_temp \
   /var/cache/nginx/uwsgi_temp \
-  /var/cache/nginx/scgi_temp
+  /var/cache/nginx/scgi_temp \
+  /etc/nginx/acme
 
 EXPOSE 80
 STOPSIGNAL SIGTERM
