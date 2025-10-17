@@ -13,11 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       LATEST_TAG: ${{ steps.set_outputs.outputs.LATEST_TAG }}
-      NGINX_TAR: ${{ steps.set_outputs.outputs.NGINX_TAR }}
       NGINX_VERSION: ${{ steps.set_outputs.outputs.NGINX_VERSION }}
-      NCHAN_TAR: ${{ steps.set_outputs.outputs.NCHAN_TAR }}
       NCHAN_VERSION: ${{ steps.set_outputs.outputs.NCHAN_VERSION }}
-      HEADERS_MORE_TAR: ${{ steps.set_outputs.outputs.HEADERS_MORE_TAR }}
       HEADERS_MORE_VERSION: ${{ steps.set_outputs.outputs.HEADERS_MORE_VERSION }}
     steps:
       - id: set_outputs
@@ -26,33 +23,19 @@ jobs:
         name: Set outputs
         run: |
           sudo -E apt-get -qq update
-          sudo -E apt-get -qq install jq git
+          sudo -E apt-get -qq install jq
           export QUREY_PARAMS="?page_size=2&page=1&ordering=last_updated"
           export LATEST_TAG=$(echo -n $(curl -s "https://hub.docker.com/v2/repositories/${DOCKER_REPO_NAME}/tags/${QUREY_PARAMS}" | jq -r '.results | sort_by(.name) | first | .name'))
-          git clone https://github.com/nginx/nginx.git $GITHUB_WORKSPACE/tmp/nginx
-          cd $GITHUB_WORKSPACE/tmp/nginx
-          export NGINX_VERSION=$(git describe --tags $(git rev-list --tags --max-count=1) | cut -d "-" -f2)
-          export NGINX_TAR="http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz"
-          git clone https://github.com/slact/nchan.git $GITHUB_WORKSPACE/tmp/nchan
-          cd $GITHUB_WORKSPACE/tmp/nchan
-          export NCHAN_LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
-          export NCHAN_VERSION=$(echo $NCHAN_LATEST_TAG | cut -d "v" -f2)
-          export NCHAN_TAR="https://github.com/slact/nchan/archive/$NCHAN_LATEST_TAG.tar.gz"
-          git clone https://github.com/openresty/headers-more-nginx-module.git $GITHUB_WORKSPACE/tmp/headers-more
-          cd $GITHUB_WORKSPACE/tmp/headers-more
-          export HEADERS_MORE_LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
-          export HEADERS_MORE_VERSION=$(echo $HEADERS_MORE_LATEST_TAG | cut -d "v" -f2)
-          export HEADERS_MORE_TAR="https://github.com/openresty/headers-more-nginx-module/archive/$HEADERS_MORE_LATEST_TAG.tar.gz"
+          export NGINX_VERSION=$(curl -s https://nginx.org/en/CHANGES | grep -oP 'nginx \K[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          export NCHAN_VERSION=$(curl -sL https://api.github.com/repos/slact/nchan/tags | grep '"name"' | head -1 | sed -E 's/.*"v([^"]+)".*/\1/')
+          export HEADERS_MORE_VERSION=$(curl -sL https://api.github.com/repos/openresty/headers-more-nginx-module/tags | grep '"name"' | head -1 | sed -E 's/.*"v([^"]+)".*/\1/')
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_OUTPUT
-          echo "NGINX_TAR=$NGINX_TAR" >> $GITHUB_OUTPUT
           echo "NGINX_VERSION=$NGINX_VERSION" >> $GITHUB_OUTPUT
-          echo "NCHAN_TAR=$NCHAN_TAR" >> $GITHUB_OUTPUT
           echo "NCHAN_VERSION=$NCHAN_VERSION" >> $GITHUB_OUTPUT
-          echo "HEADERS_MORE_TAR=$HEADERS_MORE_TAR" >> $GITHUB_OUTPUT
           echo "HEADERS_MORE_VERSION=$HEADERS_MORE_VERSION" >> $GITHUB_OUTPUT
 
   docker:
-    if: needs.get_env.outputs.LATEST_TAG != needs.get_env.outputs.NGINX_VERSION
+    if: needs.get_env.outputs.LATEST_TAG != needs.get_env.outputs.NGINX_VERSION && needs.get_env.outputs.NGINX_VERSION != ''
     runs-on: ubuntu-latest
     needs: get_env
     steps:
