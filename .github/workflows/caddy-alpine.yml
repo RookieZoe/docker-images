@@ -2,7 +2,7 @@ name: caddy-alpine
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
   workflow_dispatch:
 
 env:
@@ -24,7 +24,7 @@ jobs:
           sudo -E apt-get -qq install jq
           export QUREY_PARAMS="?page_size=2&page=1&ordering=last_updated"
           export LATEST_TAG=$(echo -n $(curl -s "https://hub.docker.com/v2/repositories/${DOCKER_REPO_NAME}/tags/${QUREY_PARAMS}" | jq -r '.results | sort_by(.name) | first | .name'))
-          export CADDY_VERSION=$(curl -sL https://api.github.com/repos/caddyserver/caddy/tags | grep '"name"' | head -1 | sed -E 's/.*"v([^"]+)".*/\1/')
+          export CADDY_VERSION=$(curl -sL https://api.github.com/repos/caddyserver/caddy/tags | grep '"name"' | grep -v 'beta' | grep -v 'rc' | head -1 | sed -E 's/.*"v([^"]+)".*/\1/')
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_OUTPUT
           echo "CADDY_VERSION=$CADDY_VERSION" >> $GITHUB_OUTPUT
 
