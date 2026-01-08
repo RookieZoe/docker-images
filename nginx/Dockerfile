@@ -1,4 +1,4 @@
-FROM nginx:stable-alpine AS builder
+FROM --platform=$TARGETPLATFORM nginx:stable-alpine3.21 AS builder
 
 ARG NGINX_VERSION
 ARG NCHAN_VERSION
@@ -98,7 +98,7 @@ RUN cd /tmp/nginx-${NGINX_VERSION} && \
   make -j$(getconf _NPROCESSORS_ONLN) modules && \
   make install
 
-FROM nginx:stable-alpine
+FROM --platform=$TARGETPLATFORM nginx:stable-alpine
 LABEL maintainer="Rookie_Zoe <i@rookiezoe.com>"
 
 ARG NGINX_VERSION

@@ -8,7 +8,8 @@ RUN set -ex \
   && apk add --no-cache unzip \
   && mkdir -p /var/log/xray /usr/local/share/xray \
   && chmod +x /download-xray.sh \
-  && /download-xray.sh $XRAY_VERSION $TARGETPLATFORM \
+  && echo "XRAY_VERSION=$XRAY_VERSION TARGETPLATFORM=$TARGETPLATFORM" \
+  && /download-xray.sh "$XRAY_VERSION" "$TARGETPLATFORM" \
   && wget -O /usr/local/share/xray/geoip.dat https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat >/dev/null 2>&1 \
   && wget -O /usr/local/share/xray/geosite.dat https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat >/dev/null 2>&1
 

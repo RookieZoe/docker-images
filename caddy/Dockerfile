@@ -13,6 +13,6 @@ RUN xcaddy build \
   --with github.com/caddy-dns/huaweicloud \
   --with github.com/caddy-dns/spaceship
 
-FROM caddy:${CADDY_VERSION}-alpine
+FROM --platform=$TARGETPLATFORM caddy:${CADDY_VERSION}-alpine
 
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
