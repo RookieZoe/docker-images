@@ -56,3 +56,10 @@ Some self-build images for self-host.
 [![rookiezoe/xray:latest](https://img.shields.io/docker/v/rookiezoe/xray?color=086dd7&label=rookiezoe%2Fxray%3Alatest&logo=docker&logoColor=fff)](https://hub.docker.com/r/rookiezoe/xray/tags?page=1&ordering=last_updated)
 
 [xray](https://github.com/XTLS/Xray-core) docker image, base on [teddysun](https://github.com/teddysun)'s Dockerfile.
+
+## 4. vibevoice-asr
+
+[![Docker Pulls](https://img.shields.io/docker/pulls/rookiezoe/vibevoice-asr)](https://hub.docker.com/r/rookiezoe/vibevoice-asr)
+[![Docker Image Size](https://img.shields.io/docker/image-size/rookiezoe/vibevoice-asr/latest)](https://hub.docker.com/r/rookiezoe/vibevoice-asr)
+
+[More info](vibevoice-asr/README.md)

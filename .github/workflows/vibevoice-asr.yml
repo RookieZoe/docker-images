@@ -1,0 +1,95 @@
+name: vibevoice-asr
+
+on:
+  workflow_dispatch:
+
+env:
+  DOCKER_REPO_NAME: rookiezoe/vibevoice-asr
+
+jobs:
+  get_env:
+    runs-on: ubuntu-latest
+    outputs:
+      LATEST_TAG: ${{ steps.set_outputs.outputs.LATEST_TAG }}
+      VLLM_VERSION: ${{ steps.set_outputs.outputs.VLLM_VERSION }}
+      VIBEVOICE_VERSION: ${{ steps.set_outputs.outputs.VIBEVOICE_VERSION }}
+      SHOULD_BUILD: ${{ steps.set_outputs.outputs.SHOULD_BUILD }}
+    steps:
+      - id: set_outputs
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        name: Set outputs
+        run: |
+          sudo -E apt-get -qq update
+          sudo -E apt-get -qq install jq
+
+          # Get latest tag from Docker Hub
+          export QUREY_PARAMS="?page_size=10&page=1&ordering=last_updated"
+          export LATEST_TAG=$(curl -s "https://hub.docker.com/v2/repositories/${DOCKER_REPO_NAME}/tags/${QUREY_PARAMS}" 2>/dev/null | jq -r '.results | map(select(.name != "latest")) | sort_by(.name) | last | .name // "none"')
+
+          # Get latest vLLM version
+          export VLLM_VERSION=$(curl -sL https://api.github.com/repos/vllm-project/vllm/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+
+          # Get latest VibeVoice commit (use main branch)
+          export VIBEVOICE_VERSION="main"
+
+          # Determine if we should build
+          # Build if: force_build is true OR latest tag is different from vllm version
+          if [[ "${{ github.event.inputs.force_build }}" == "true" ]] || [[ "${LATEST_TAG}" != "${VLLM_VERSION}" ]]; then
+            export SHOULD_BUILD="true"
+          else
+            export SHOULD_BUILD="false"
+          fi
+
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_OUTPUT
+          echo "VLLM_VERSION=$VLLM_VERSION" >> $GITHUB_OUTPUT
+          echo "VIBEVOICE_VERSION=$VIBEVOICE_VERSION" >> $GITHUB_OUTPUT
+          echo "SHOULD_BUILD=$SHOULD_BUILD" >> $GITHUB_OUTPUT
+
+          echo "Latest Docker tag: $LATEST_TAG"
+          echo "vLLM version: $VLLM_VERSION"
+          echo "VibeVoice version: $VIBEVOICE_VERSION"
+          echo "Should build: $SHOULD_BUILD"
+
+  docker:
+    if: needs.get_env.outputs.SHOULD_BUILD == 'true'
+    runs-on: ubuntu-latest
+    needs: get_env
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DOCKER_REPO_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ needs.get_env.outputs.VLLM_VERSION }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./vibevoice-asr
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            VLLM_VERSION=${{ needs.get_env.outputs.VLLM_VERSION }}
+            VIBEVOICE_VERSION=${{ needs.get_env.outputs.VIBEVOICE_VERSION }}

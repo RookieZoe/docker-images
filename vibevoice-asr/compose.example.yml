@@ -1,0 +1,63 @@
+# VibeVoice ASR Docker Compose Example
+#
+# Usage:
+#   1. Copy this file: cp compose.example.yml compose.yml
+#   2. Modify settings as needed
+#   3. Start: docker compose up -d
+#   4. View logs: docker compose logs -f
+#   5. Stop: docker compose down
+
+services:
+  vibevoice-asr:
+    image: rookiezoe/vibevoice-asr:latest
+    container_name: vibevoice-asr
+    # Required for vLLM shared memory
+    ipc: host
+    ports:
+      - '8000:8000'
+    environment:
+      # Model configuration
+      - MODEL_PATH=microsoft/VibeVoice-ASR
+      - PORT=8000
+
+      # GPU settings
+      - TENSOR_PARALLEL_SIZE=1
+      - GPU_MEMORY_UTILIZATION=0.8
+
+      # Performance tuning
+      - MAX_MODEL_LEN=65536
+      - MAX_NUM_SEQS=64
+      - VIBEVOICE_FFMPEG_MAX_CONCURRENCY=64
+
+      # Memory optimization
+      - PYTORCH_ALLOC_CONF=expandable_segments:True
+
+      # Skip tokenizer regeneration (set to true after first run)
+      # - SKIP_TOKENIZER=true
+
+      # HuggingFace settings (optional)
+      # - HF_TOKEN=your_token_here
+      # - HF_ENDPOINT=https://hf-mirror.com
+    volumes:
+      # Mount HuggingFace cache to persist downloaded models
+      - ~/.cache/huggingface:/root/.cache/huggingface
+
+      # Optional: Mount custom initialization scripts
+      # - ./entrypoint.d:/docker-entrypoint.d:ro
+
+      # Optional: Mount local audio files for processing
+      # - ./data:/app/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
