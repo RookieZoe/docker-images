@@ -51,8 +51,13 @@ echo >&3 "  Tensor Parallel Size: ${TENSOR_PARALLEL_SIZE}"
 echo >&3 "  GPU Memory Utilization: ${GPU_MEMORY_UTILIZATION}"
 echo >&3 "============================================================"
 
-# Download model if it's a HuggingFace ID (contains /)
-if [[ "${MODEL_PATH}" == *"/"* ]]; then
+# Determine if MODEL_PATH is a local path or HuggingFace ID
+# Local paths start with "/" (absolute) or "./" (relative)
+if [[ "${MODEL_PATH}" == /* ]] || [[ "${MODEL_PATH}" == ./* ]]; then
+    MODEL_DIR="${MODEL_PATH}"
+    echo >&3 "$0: Using local model path: ${MODEL_DIR}"
+elif [[ "${MODEL_PATH}" == *"/"* ]]; then
+    # Contains "/" but doesn't start with "/" or "./" -> HuggingFace ID (e.g., microsoft/VibeVoice-ASR)
     echo >&3 "$0: Downloading model from HuggingFace: ${MODEL_PATH}"
     MODEL_DIR=$(python3 -c "
 from huggingface_hub import snapshot_download
@@ -63,6 +68,7 @@ with warnings.catch_warnings():
 ")
     echo >&3 "$0: Model downloaded to: ${MODEL_DIR}"
 else
+    # No "/" at all -> treat as local path
     MODEL_DIR="${MODEL_PATH}"
     echo >&3 "$0: Using local model path: ${MODEL_DIR}"
 fi
