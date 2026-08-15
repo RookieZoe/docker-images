@@ -1,0 +1,79 @@
+name: tokenhub
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+env:
+  DOCKER_REPO_NAME: rookiezoe/tokenhub
+  UPSTREAM_REPO: astaxie/TokenHub
+
+jobs:
+  get_env:
+    runs-on: ubuntu-latest
+    outputs:
+      LATEST_TAG: ${{ steps.set_outputs.outputs.LATEST_TAG }}
+      TOKENHUB_VERSION: ${{ steps.set_outputs.outputs.TOKENHUB_VERSION }}
+    steps:
+      - id: set_outputs
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        name: Set outputs
+        run: |
+          sudo -E apt-get -qq update
+          sudo -E apt-get -qq install jq
+          export QUREY_PARAMS="?page_size=2&page=1&ordering=last_updated"
+          export LATEST_TAG=$(echo -n $(curl -s "https://hub.docker.com/v2/repositories/${DOCKER_REPO_NAME}/tags/${QUREY_PARAMS}" | jq -r '.results | sort_by(.name) | first | .name'))
+          export TOKENHUB_VERSION=$(curl -sL "https://api.github.com/repos/${UPSTREAM_REPO}/releases/latest" | jq -r '.tag_name // empty' | sed -E 's/^v//')
+          [ -n "$TOKENHUB_VERSION" ] || export TOKENHUB_VERSION=$(curl -sL "https://api.github.com/repos/${UPSTREAM_REPO}/tags" | jq -r '.[0].name // empty' | sed -E 's/^v//')
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_OUTPUT
+          echo "TOKENHUB_VERSION=$TOKENHUB_VERSION" >> $GITHUB_OUTPUT
+
+  docker:
+    if: needs.get_env.outputs.LATEST_TAG != needs.get_env.outputs.TOKENHUB_VERSION && needs.get_env.outputs.TOKENHUB_VERSION != ''
+    runs-on: ubuntu-latest
+    needs: get_env
+    steps:
+      - name: Checkout TokenHub
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ env.UPSTREAM_REPO }}
+          path: tokenhub-src
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.DOCKER_REPO_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ needs.get_env.outputs.TOKENHUB_VERSION }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: ./tokenhub-src
+          file: backend/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            TOKENHUB_VERSION=${{ needs.get_env.outputs.TOKENHUB_VERSION }}
+            TOKENHUB_BUILD_TYPE=release
+            GOPROXY=https://goproxy.cn,direct

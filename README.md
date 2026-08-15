@@ -63,3 +63,14 @@ Some self-build images for self-host.
 [![Docker Image Size](https://img.shields.io/docker/image-size/rookiezoe/vibevoice-asr/latest)](https://hub.docker.com/r/rookiezoe/vibevoice-asr)
 
 [More info](vibevoice-asr/README.md)
+
+## 5. tokenhub
+
+[![status](https://img.shields.io/github/actions/workflow/status/RookieZoe/docker-images/tokenhub.yml?label=tokenhub&logo=github&logoColor=959da5)](https://github.com/RookieZoe/docker-images/actions/workflows/tokenhub.yml)
+[![rookiezoe/tokenhub:latest](https://img.shields.io/docker/v/rookiezoe/tokenhub?color=086dd7&label=rookiezoe%2Ftokenhub%3Alatest&logo=docker&logoColor=fff)](https://hub.docker.com/r/rookiezoe/tokenhub/tags?page=1&ordering=last_updated)
+
+[TokenHub](https://github.com/astaxie/TokenHub) (private enterprise AI gateway)
+docker image, built from the upstream `main` branch — Go backend + Next.js admin
+console in a single image.
+
+[More info](tokenhub/README.md)
